@@ -10,5 +10,6 @@ public enum Category {
     MYSTERY,
     ROMANCE,
     HORROR,
-    SELF_HELP
+    SELF_HELP,
+    PROGRAMMING
 }
