@@ -1,12 +1,14 @@
 package com.thomasalves.library.resource;
 
 import com.thomasalves.library.dto.BookDTO;
+import com.thomasalves.library.dto.BookInsertDTO;
 import com.thomasalves.library.entities.Book;
 import com.thomasalves.library.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -32,6 +34,15 @@ public class BookResource {
 
     }
 
+    @PostMapping
+    public ResponseEntity<BookDTO> insert(@RequestBody BookInsertDTO bIDto){
+        Book book = bookService.insert(bIDto);
+        boolean available = bookService.checkAvailability(book);
+        BookDTO bookDto = new BookDTO(book, available);
+
+        URI uri = URI.create("/books/" + book.getId());
+        return ResponseEntity.created(uri).body(bookDto);
+    }
 
 
 }

@@ -29,7 +29,9 @@ public class Book {
     private int pages;
     private Integer edition;
 
-    @OneToMany(mappedBy = "book")
+
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.PERSIST)
     private List<BookCopy> copies;
 
     public Book() {
