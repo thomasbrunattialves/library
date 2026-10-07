@@ -7,6 +7,7 @@ import com.thomasalves.library.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -40,9 +41,23 @@ public class BookResource {
         boolean available = bookService.checkAvailability(book);
         BookDTO bookDto = new BookDTO(book, available);
 
-        URI uri = URI.create("/books/" + book.getId());
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(book.getId())
+                .toUri();
         return ResponseEntity.created(uri).body(bookDto);
     }
 
+    @DeleteMapping (value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        bookService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody BookInsertDTO bookInsertDTO) {
+        bookService.update(id, bookInsertDTO);
+        return ResponseEntity.ok().build();
+    }
 
 }

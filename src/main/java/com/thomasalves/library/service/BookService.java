@@ -73,5 +73,36 @@ public class BookService {
 
     }
 
+    public void delete(Long id) {
+        Book book = findBookById(id);
+        bookRepository.delete(book);
+    }
+
+
+    public void update(Long id, BookInsertDTO bookInsertDTO) {
+        Book book = findBookById(id);
+        updateData(book, bookInsertDTO);
+        bookRepository.save(book);
+    }
+
+    private void updateData(Book book, BookInsertDTO bIDto){
+
+        book.setTitle(bIDto.getTitle());
+
+        List<Author> authors = new ArrayList<>();
+
+        for( Long id : bIDto.getAuthorIds()){
+            authors.add(authorService.findById(id));
+        }
+
+        book.setAuthors(authors);
+
+        book.setCategory(bIDto.getCategory());
+        book.setLanguage(bIDto.getLanguage());
+        book.setPages(bIDto.getPages());
+        book.setEdition(bIDto.getEdition());
+
+    }
+
 
 }

@@ -31,7 +31,9 @@ public class Book {
 
 
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.PERSIST)
+
+    @OneToMany(mappedBy = "book",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
     private List<BookCopy> copies;
 
     public Book() {
