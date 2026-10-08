@@ -43,12 +43,10 @@ public class BookCopyService {
 
     }
 
-
-
-
-
-
-
+    public void delete(Long id) {
+        BookCopy bk = findById(id);
+        bookCopyRepository.delete(bk);
+    }
 
 }
 
