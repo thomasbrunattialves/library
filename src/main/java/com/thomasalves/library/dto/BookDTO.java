@@ -1,6 +1,7 @@
 package com.thomasalves.library.dto;
 
 import com.thomasalves.library.entities.Book;
+import com.thomasalves.library.entities.enums.Availability;
 import com.thomasalves.library.entities.enums.Category;
 
 import java.io.Serializable;
@@ -19,7 +20,7 @@ public class BookDTO implements Serializable {
     private Integer edition;
     private boolean availability;
 
-    public BookDTO(){
+    public BookDTO(Book book, Availability availability){
 
     }
 

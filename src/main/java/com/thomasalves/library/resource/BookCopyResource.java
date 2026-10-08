@@ -2,15 +2,15 @@ package com.thomasalves.library.resource;
 
 
 import com.thomasalves.library.dto.BookCopyDTO;
+import com.thomasalves.library.dto.BookCopyInsertDTO;
 import com.thomasalves.library.entities.BookCopy;
 import com.thomasalves.library.service.BookCopyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -33,6 +33,24 @@ public class BookCopyResource {
         BookCopy bookcopy = bookCopyService.findById(id);
         BookCopyDTO bookCopyDTO = new BookCopyDTO(bookcopy);
         return ResponseEntity.ok(bookCopyDTO);
+
+    }
+
+
+    @PostMapping
+    public ResponseEntity<BookCopyDTO> insert(@RequestBody BookCopyInsertDTO bookCopyInsertDTO) {
+
+        BookCopy bk = bookCopyService.Insert(bookCopyInsertDTO);
+
+        BookCopyDTO bookCopyDTO = new BookCopyDTO(bk);
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(bk.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(bookCopyDTO);
+
 
     }
 
