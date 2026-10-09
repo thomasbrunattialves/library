@@ -2,6 +2,7 @@ package com.thomasalves.library.service;
 
 
 import com.thomasalves.library.dto.BookCopyInsertDTO;
+import com.thomasalves.library.dto.BookCopyUpdateDTO;
 import com.thomasalves.library.entities.Book;
 import com.thomasalves.library.entities.BookCopy;
 import com.thomasalves.library.entities.enums.Availability;
@@ -29,7 +30,7 @@ public class BookCopyService {
         return bookCopyRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Book copy not found! Id: " + id));
     }
 
-    public BookCopy Insert(BookCopyInsertDTO bookCopyInsertDTO){
+    public BookCopy insert(BookCopyInsertDTO bookCopyInsertDTO){
 
         BookCopy bookCopy = new BookCopy();
 
@@ -47,6 +48,16 @@ public class BookCopyService {
         BookCopy bk = findById(id);
         bookCopyRepository.delete(bk);
     }
+
+    public void update(Long id,  BookCopyUpdateDTO bookCopyUpdateDTO) {
+        BookCopy bookCopy = findById(id);
+        bookCopy.setShelfLocation(bookCopyUpdateDTO.getShelfLocation());
+        bookCopy.setAvailability(bookCopyUpdateDTO.getAvailability());
+
+       bookCopyRepository.save(bookCopy);
+
+    }
+
 
 }
 

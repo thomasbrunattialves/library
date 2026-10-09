@@ -3,6 +3,7 @@ package com.thomasalves.library.resource;
 
 import com.thomasalves.library.dto.BookCopyDTO;
 import com.thomasalves.library.dto.BookCopyInsertDTO;
+import com.thomasalves.library.dto.BookCopyUpdateDTO;
 import com.thomasalves.library.entities.BookCopy;
 import com.thomasalves.library.service.BookCopyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class BookCopyResource {
     @GetMapping
     public ResponseEntity<List<BookCopyDTO>> findAll() {
         List<BookCopy> list = bookCopyService.findAll();
-        List<BookCopyDTO> dtoList = list.stream().map(bookCopy -> new BookCopyDTO(bookCopy) ).toList();
+        List<BookCopyDTO> dtoList = list.stream().map(BookCopyDTO::new).toList();
         return ResponseEntity.ok(dtoList);
 
     }
@@ -40,7 +41,7 @@ public class BookCopyResource {
     @PostMapping
     public ResponseEntity<BookCopyDTO> insert(@RequestBody BookCopyInsertDTO bookCopyInsertDTO) {
 
-        BookCopy bk = bookCopyService.Insert(bookCopyInsertDTO);
+        BookCopy bk = bookCopyService.insert(bookCopyInsertDTO);
 
         BookCopyDTO bookCopyDTO = new BookCopyDTO(bk);
 
@@ -59,4 +60,17 @@ public class BookCopyResource {
         bookCopyService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody BookCopyUpdateDTO dto){
+        bookCopyService.update(id, dto);
+        return ResponseEntity.ok().build();
+    }
+
+
+
+
+
+
+
 }
