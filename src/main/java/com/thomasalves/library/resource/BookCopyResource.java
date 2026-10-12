@@ -67,10 +67,4 @@ public class BookCopyResource {
         return ResponseEntity.ok().build();
     }
 
-
-
-
-
-
-
 }
