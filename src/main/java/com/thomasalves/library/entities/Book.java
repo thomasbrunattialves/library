@@ -1,10 +1,11 @@
 package com.thomasalves.library.entities;
 
+import com.thomasalves.library.entities.enums.BookStatus;
 import com.thomasalves.library.entities.enums.Category;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "tb_book")
@@ -14,6 +15,13 @@ public class Book {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
     private String title;
+
+
+    private LocalDate addedAt = LocalDate.now();
+
+    @OneToMany(mappedBy = "book")
+    private List<BookStatusHistory> statusHistory;
+
 
     @ManyToMany
     @JoinTable(name = "book_author",
@@ -33,8 +41,12 @@ public class Book {
 
 
     @OneToMany(mappedBy = "book",
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
+            cascade = {CascadeType.PERSIST,  CascadeType.MERGE})
     private List<BookCopy> copies;
+
+
+    @Enumerated(EnumType.STRING)
+    private BookStatus status = BookStatus.ACTIVE;
 
     public Book() {
     }
@@ -63,6 +75,15 @@ public class Book {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public LocalDate getAddedAt() {
+        return addedAt;
+    }
+
+    public void setAddedAt(LocalDate addedAt) {
+        this.addedAt = addedAt;
+    }
+
 
     public List<Author> getAuthors() {
         return authors;
@@ -104,6 +125,13 @@ public class Book {
         this.pages = pages;
     }
 
+    public BookStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BookStatus status) {
+        this.status = status;
+    }
 
     public List<BookCopy> getCopies() {
         return copies;
@@ -115,13 +143,14 @@ public class Book {
 
     @Override
     public boolean equals(Object o) {
+        if(this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return Objects.equals(id, book.id);
+        return id != null && id.equals(book.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return getClass().hashCode();
     }
 }

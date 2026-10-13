@@ -43,12 +43,12 @@ public class AuthorService {
         authorRepository.delete(author);
     }
 
-    public Author update(Long id, AuthorInsertDTO authorInsertDTO) {
+    public void update(Long id, AuthorInsertDTO authorInsertDTO) {
         Author author = findById(id);
         author.setName(authorInsertDTO.getName());
         author.setBirthYear(authorInsertDTO.getBirthYear());
         author.setNationality(authorInsertDTO.getNationality());
-        return authorRepository.save(author);
+        authorRepository.save(author);
     }
 
 }

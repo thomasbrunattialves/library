@@ -3,8 +3,6 @@ package com.thomasalves.library.entities;
 import com.thomasalves.library.entities.enums.Availability;
 import jakarta.persistence.*;
 
-import java.util.Objects;
-
 @Entity
 @Table(name = "tb_book_copy")
 public class BookCopy {
@@ -64,14 +62,15 @@ public class BookCopy {
 
     @Override
     public boolean equals(Object o) {
+        if(this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BookCopy bookCopy = (BookCopy) o;
-        return Objects.equals(id, bookCopy.id);
+        return id != null && id.equals(bookCopy.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return getClass().hashCode();
     }
 }
 

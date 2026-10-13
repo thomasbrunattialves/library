@@ -10,6 +10,8 @@ public class AuthorDTO implements Serializable {
 
     private Long id;
     private String name;
+    private String nationality;
+    private Integer birthYear;
 
     public AuthorDTO() {
     }
@@ -17,6 +19,8 @@ public class AuthorDTO implements Serializable {
     public AuthorDTO(Author author) {
         this.id = author.getId();
         this.name = author.getName();
+        this.nationality = author.getNationality();
+        this.birthYear = author.getBirthYear();
 
     }
 
@@ -34,5 +38,21 @@ public class AuthorDTO implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
+
+    public Integer getBirthYear() {
+        return birthYear;
+    }
+
+    public void setBirthYear(Integer birthYear) {
+        this.birthYear = birthYear;
     }
 }
