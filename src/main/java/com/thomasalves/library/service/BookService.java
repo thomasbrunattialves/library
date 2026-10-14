@@ -4,11 +4,16 @@ import com.thomasalves.library.dto.BookInsertDTO;
 import com.thomasalves.library.entities.Author;
 import com.thomasalves.library.entities.Book;
 import com.thomasalves.library.entities.BookCopy;
+import com.thomasalves.library.entities.BookStatusHistory;
 import com.thomasalves.library.entities.enums.Availability;
+import com.thomasalves.library.entities.enums.BookStatus;
 import com.thomasalves.library.repository.BookRepository;
+import com.thomasalves.library.repository.BookStatusHistoryRepository;
 import com.thomasalves.library.service.exception.ObjectNotFoundException;
+import com.thomasalves.library.service.exception.ResourceConflictException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +26,9 @@ public class BookService {
 
     @Autowired
     private AuthorService authorService;
+
+    @Autowired
+    private BookStatusHistoryRepository historyRepository;
 
 
     public List<Book> findAll(){
@@ -73,10 +81,33 @@ public class BookService {
 
     }
 
+    @Transactional
     public void delete(Long id) {
         Book book = findBookById(id);
-        bookRepository.delete(book);
+        BookStatus previousStatus = book.getStatus();
+        if(previousStatus == BookStatus.WITHDRAWING || previousStatus == BookStatus.REMOVED){
+            throw new ResourceConflictException("Book is already being withdrawn or removed.");
+        }
+        List <Availability> availabilities = new ArrayList<>();
+
+        for(int i = 0; i < book.getCopies().size(); i++){
+            BookCopy copy = book.getCopies().get(i);
+            availabilities.add(copy.getAvailability());
+        }
+        if(availabilities.stream().allMatch(availability -> availability == Availability.AVAILABLE)){
+            book.setStatus(BookStatus.REMOVED);
+        }
+        else{
+            book.setStatus(BookStatus.WITHDRAWING);
+        }
+        bookRepository.save(book);
+        BookStatus newStatus = book.getStatus();
+        BookStatusHistory history = new BookStatusHistory(book, previousStatus, newStatus, "Book withdrawn from circulation");
+        historyRepository.save(history);
+
     }
+
+
 
 
     public void update(Long id, BookInsertDTO bookInsertDTO) {
