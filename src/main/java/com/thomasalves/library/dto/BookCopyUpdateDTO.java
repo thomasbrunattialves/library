@@ -1,10 +1,14 @@
 package com.thomasalves.library.dto;
 
 import com.thomasalves.library.entities.enums.Availability;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class BookCopyUpdateDTO {
 
+    @NotBlank
     private String shelfLocation;
+    @NotNull
     private Availability availability;
 
     public BookCopyUpdateDTO() {

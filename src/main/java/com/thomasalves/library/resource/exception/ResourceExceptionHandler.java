@@ -5,10 +5,12 @@ import com.thomasalves.library.service.exception.ResourceConflictException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
@@ -36,6 +38,27 @@ public class ResourceExceptionHandler {
         st.setMessage(e.getMessage());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(st);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<StandardError> validationError(
+            MethodArgumentNotValidException e,
+            HttpServletRequest request) {
+
+        String message = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+
+        StandardError st = new StandardError();
+        st.setTimestamp(Instant.now());
+        st.setStatus(HttpStatus.BAD_REQUEST.value());
+        st.setError("Validation error");
+        st.setMessage(message);
+        st.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(st);
     }
 
 }

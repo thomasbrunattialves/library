@@ -2,9 +2,9 @@ package com.thomasalves.library.entities;
 
 import com.thomasalves.library.entities.enums.ReservationStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reservations")
@@ -22,21 +22,26 @@ public class Reservation {
     @JoinColumn(name = "reservation_book_copy_id", nullable = false)
     private BookCopy bookCopy;
 
+    @NotNull
     private LocalDate reservationDate = LocalDate.now();
-    private LocalDateTime scheduledPickupDate;
-    private LocalDateTime actualPickupDate;
+    @NotNull
+    private LocalDate scheduledPickupDate;
+    private LocalDate actualPickupDate;
 
+
+    @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private ReservationStatus status;
 
     public Reservation() {
     }
 
-    public Reservation(User user, BookCopy bookCopy,LocalDateTime scheduledPickupDate, ReservationStatus status) {
+    public Reservation(User user, BookCopy bookCopy,LocalDate scheduledPickupDate) {
         this.user = user;
         this.bookCopy = bookCopy;
         this.scheduledPickupDate = scheduledPickupDate;
-        this.status = status;
+        this.status = ReservationStatus.PENDING;
     }
 
     public Long getId() {
@@ -71,19 +76,19 @@ public class Reservation {
         this.reservationDate = reservationDate;
     }
 
-    public LocalDateTime getScheduledPickupDate() {
+    public LocalDate getScheduledPickupDate() {
         return scheduledPickupDate;
     }
 
-    public void setScheduledPickupDate(LocalDateTime scheduledPickupDate) {
+    public void setScheduledPickupDate(LocalDate scheduledPickupDate) {
         this.scheduledPickupDate = scheduledPickupDate;
     }
 
-    public LocalDateTime getActualPickupDate() {
+    public LocalDate getActualPickupDate() {
         return actualPickupDate;
     }
 
-    public void setActualPickupDate(LocalDateTime actualPickupDate) {
+    public void setActualPickupDate(LocalDate actualPickupDate) {
         this.actualPickupDate = actualPickupDate;
     }
 

@@ -29,6 +29,12 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name = "author_id"))
     private List<Author> authors;
 
+    @Column(length = 1000)
+    private String coverImageUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     @Enumerated(EnumType.STRING)
     private Category category;
 
@@ -91,6 +97,30 @@ public class Book {
 
     public void setAuthors(List<Author> authors) {
         this.authors = authors;
+    }
+
+    public List<BookStatusHistory> getStatusHistory() {
+        return statusHistory;
+    }
+
+    public void setStatusHistory(List<BookStatusHistory> statusHistory) {
+        this.statusHistory = statusHistory;
+    }
+
+    public String getCoverImageUrl() {
+        return coverImageUrl;
+    }
+
+    public void setCoverImageUrl(String coverImageUrl) {
+        this.coverImageUrl = coverImageUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Category getCategory() {

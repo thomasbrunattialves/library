@@ -1,6 +1,7 @@
 package com.thomasalves.library.dto;
 
 import com.thomasalves.library.entities.enums.Category;
+import jakarta.validation.constraints.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -9,13 +10,28 @@ public class BookInsertDTO implements Serializable {
 
     private static final long serialVersiounUID = 1L;
 
+    @NotBlank
     private String title;
-    private List<Long> authorIds;
+
+    @NotEmpty
+    private List<@NotNull @Positive Long> authorIds;
+
+    @NotNull
     private Category category;
+
+    @NotBlank
     private String language;
+
+    @NotNull
+    @Positive
     private Integer pages;
     private Integer edition;
+
+    @NotNull
+    @PositiveOrZero
     private Integer numberOfCopies;
+    private String coverImageUrl;
+    private String description;
 
     public BookInsertDTO() {
 
@@ -85,5 +101,21 @@ public class BookInsertDTO implements Serializable {
 
     public void setNumberOfCopies(Integer numberOfCopies) {
         this.numberOfCopies = numberOfCopies;
+    }
+
+    public String getCoverImageUrl() {
+        return coverImageUrl;
+    }
+
+    public void setCoverImageUrl(String coverImageUrl) {
+        this.coverImageUrl = coverImageUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

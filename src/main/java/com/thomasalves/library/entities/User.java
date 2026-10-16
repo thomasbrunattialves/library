@@ -1,6 +1,10 @@
 package com.thomasalves.library.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 
 import java.time.LocalDate;
 
@@ -9,13 +13,19 @@ import java.time.LocalDate;
 @Table(name = "tb_user")
 public class User {
 
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
     private String name;
+
+    @NotNull
+    @Past
     private LocalDate birthDate;
+
+    @NotBlank
+    @Email
     private String email;
     private String phone;
     private String address;

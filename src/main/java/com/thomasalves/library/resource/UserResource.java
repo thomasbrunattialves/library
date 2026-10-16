@@ -3,6 +3,7 @@ package com.thomasalves.library.resource;
 import com.thomasalves.library.dto.UserDTO;
 import com.thomasalves.library.entities.User;
 import com.thomasalves.library.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class UserResource {
 
 
     @PostMapping
-    public ResponseEntity<UserDTO> insert(@RequestBody UserDTO userDto) {
+    public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserDTO userDto) {
         User user = userService.fromDTO(userDto);
         user = userService.insert(user);
         URI newUri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -53,7 +54,7 @@ public class UserResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody UserDTO userDto) {
+    public ResponseEntity<Void> update( @PathVariable Long id,@Valid @RequestBody UserDTO userDto) {
         userService.update(id, userDto);
         return ResponseEntity.ok().build();
     }

@@ -6,6 +6,7 @@ import com.thomasalves.library.dto.BookCopyInsertDTO;
 import com.thomasalves.library.dto.BookCopyUpdateDTO;
 import com.thomasalves.library.entities.BookCopy;
 import com.thomasalves.library.service.BookCopyService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class BookCopyResource {
 
 
     @PostMapping
-    public ResponseEntity<BookCopyDTO> insert(@RequestBody BookCopyInsertDTO bookCopyInsertDTO) {
+    public ResponseEntity<BookCopyDTO> insert( @Valid @RequestBody BookCopyInsertDTO bookCopyInsertDTO) {
 
         BookCopy bk = bookCopyService.insert(bookCopyInsertDTO);
 
@@ -62,7 +63,7 @@ public class BookCopyResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody BookCopyUpdateDTO dto){
+    public ResponseEntity<Void> update( @PathVariable Long id,@Valid @RequestBody BookCopyUpdateDTO dto){
         bookCopyService.update(id, dto);
         return ResponseEntity.ok().build();
     }

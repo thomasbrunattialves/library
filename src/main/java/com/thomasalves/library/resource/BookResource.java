@@ -4,6 +4,7 @@ import com.thomasalves.library.dto.BookDTO;
 import com.thomasalves.library.dto.BookInsertDTO;
 import com.thomasalves.library.entities.Book;
 import com.thomasalves.library.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class BookResource {
     }
 
     @PostMapping
-    public ResponseEntity<BookDTO> insert(@RequestBody BookInsertDTO bIDto){
+    public ResponseEntity<BookDTO> insert(@Valid @RequestBody BookInsertDTO bIDto){
         Book book = bookService.insert(bIDto);
         boolean available = bookService.checkAvailability(book);
         BookDTO bookDto = new BookDTO(book, available);
@@ -55,7 +56,7 @@ public class BookResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody BookInsertDTO bookInsertDTO) {
+    public ResponseEntity<Void> update( @PathVariable Long id,@Valid @RequestBody BookInsertDTO bookInsertDTO) {
         bookService.update(id, bookInsertDTO);
         return ResponseEntity.ok().build();
     }

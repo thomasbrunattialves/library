@@ -5,6 +5,7 @@ import com.thomasalves.library.dto.AuthorDTO;
 import com.thomasalves.library.dto.AuthorInsertDTO;
 import com.thomasalves.library.entities.Author;
 import com.thomasalves.library.service.AuthorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class AuthorResource {
     }
 
     @PostMapping
-    public ResponseEntity<AuthorDTO> insert(@RequestBody AuthorInsertDTO authorInsertDTODTO) {
+    public ResponseEntity<AuthorDTO> insert(@Valid @RequestBody AuthorInsertDTO authorInsertDTODTO) {
         Author author = authorService.insert(authorInsertDTODTO);
         AuthorDTO authorDTO = new AuthorDTO(author);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -54,7 +55,7 @@ public class AuthorResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody AuthorInsertDTO authorInsertDTO){
+    public ResponseEntity<Void> update(@PathVariable Long id,@Valid  @RequestBody AuthorInsertDTO authorInsertDTO){
         authorService.update(id, authorInsertDTO);
         return ResponseEntity.ok().build();
     }

@@ -63,6 +63,8 @@ public class BookService {
         newBook.setLanguage(book.getLanguage());
         newBook.setPages(book.getPages());
         newBook.setEdition(book.getEdition());
+        newBook.setCoverImageUrl(book.getCoverImageUrl());
+        newBook.setDescription(book.getDescription());
 
         List<BookCopy> copies = new ArrayList<>();
 
@@ -132,6 +134,8 @@ public class BookService {
         book.setLanguage(bIDto.getLanguage());
         book.setPages(bIDto.getPages());
         book.setEdition(bIDto.getEdition());
+        book.setCoverImageUrl(bIDto.getCoverImageUrl());
+        book.setDescription(bIDto.getDescription());
 
     }
 

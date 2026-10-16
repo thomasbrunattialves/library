@@ -1,9 +1,17 @@
 package com.thomasalves.library.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class AuthorInsertDTO {
 
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String nationality;
+
+    @NotNull
     private Integer birthYear;
 
     public AuthorInsertDTO() {
