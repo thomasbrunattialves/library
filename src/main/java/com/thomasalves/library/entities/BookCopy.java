@@ -3,6 +3,9 @@ package com.thomasalves.library.entities;
 import com.thomasalves.library.entities.enums.Availability;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "tb_book_copy")
 public class BookCopy {
@@ -18,6 +21,29 @@ public class BookCopy {
     @Enumerated(EnumType.STRING)
     private Availability availability;
     private String shelfLocation;
+
+    @OneToMany(mappedBy = "bookCopy")
+    private List<Reservation> reservations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "bookCopy")
+    private List<Loan> loans = new ArrayList<>();
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(Reservation reservation) {
+        this.reservations.add(reservation);
+    }
+
+    public List<Loan> getLoans() {
+        return loans;
+    }
+
+    public void setLoans(Loan loans) {
+        this.loans.add(loans);
+    }
+
 
     public BookCopy() {
     }
@@ -72,6 +98,7 @@ public class BookCopy {
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }
 
 

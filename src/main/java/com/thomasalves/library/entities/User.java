@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -29,6 +31,13 @@ public class User {
     private String email;
     private String phone;
     private String address;
+
+    @OneToMany(mappedBy = "user")
+    private List<Reservation> reservations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Loan> loans = new ArrayList<>();
+
 
 
     public User(){
@@ -87,9 +96,26 @@ public class User {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(String address){
         this.address = address;
     }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(Reservation reservation) {
+        this.reservations.add(reservation);
+    }
+
+    public List<Loan> getLoans() {
+        return loans;
+    }
+
+    public void setLoans(Loan loans) {
+        this.loans.add(loans);
+    }
+
 
     @Override
     public boolean equals(Object o) {

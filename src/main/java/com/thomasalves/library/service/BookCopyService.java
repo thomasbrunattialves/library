@@ -58,6 +58,10 @@ public class BookCopyService {
 
     }
 
+    public BookCopy findByIdForUpdate(Long id) {
+        return bookCopyRepository.findByIdForUpdate(id).orElseThrow(() -> new ObjectNotFoundException("Book copy not found! Id: " + id));
+    }
+
 
 }
 
