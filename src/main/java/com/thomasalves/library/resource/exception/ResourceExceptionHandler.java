@@ -1,5 +1,6 @@
 package com.thomasalves.library.resource.exception;
 
+import com.thomasalves.library.service.exception.InvalidScheduledPickupDateException;
 import com.thomasalves.library.service.exception.ObjectNotFoundException;
 import com.thomasalves.library.service.exception.ResourceConflictException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,6 +58,18 @@ public class ResourceExceptionHandler {
         st.setError("Validation error");
         st.setMessage(message);
         st.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(st);
+    }
+
+    @ExceptionHandler(InvalidScheduledPickupDateException.class)
+    public ResponseEntity<StandardError> invalidScheduledPickupDate(InvalidScheduledPickupDateException e, HttpServletRequest request) {
+        StandardError st = new StandardError();
+        st.setError("Invalid scheduled pickup date");
+        st.setTimestamp(Instant.now());
+        st.setStatus(HttpStatus.BAD_REQUEST.value());
+        st.setPath(request.getRequestURI());
+        st.setMessage(e.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(st);
     }
