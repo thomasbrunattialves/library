@@ -35,41 +35,41 @@ public class ReservationService {
         BookCopy copy = bookCopyService.findByIdForUpdate(bookCopyId);
         User user = userService.findById(userId);
 
-        if (scheduledPickupDate == null) {
-            throw new InvalidScheduledPickupDateException("Scheduled pickup date cannot be null.");
-        }
-
-        if (scheduledPickupDate.isBefore(LocalDate.now())) {
-            throw new  InvalidScheduledPickupDateException("Scheduled pickup date cannot be in the past.");
-        }
-
-        boolean reserved = isReserved(bookCopyId, scheduledPickupDate);
-
-        if (reserved){
-            throw new ResourceConflictException("Book copy is already reserved for the scheduled pickup date.");
-        }
-
         if (!(copy.getBook().getStatus() == BookStatus.ACTIVE)) {
             throw new ResourceConflictException("Book is not available for reservation.");
         }
 
-        Optional<Loan> activeLoan = copy.getLoans().stream()
-                .filter(loan -> loan.getStatus() == LoanStatus.ACTIVE)
-                .findFirst();
+        if (hasReservationConflict(bookCopyId, scheduledPickupDate)) {
+            throw new ResourceConflictException(
+                    "Book copy is unavailable for the selected date."
+            );
+        }
 
+        LocalDate reservendDate = scheduledPickupDate.plusDays(14);;
+
+        Optional<Loan> activeLoan = findActiveLoan(copy);
         if (activeLoan.isPresent()) {
             LocalDate dueDate = activeLoan.get().getDueDate();
-            if (scheduledPickupDate.isAfter(dueDate)) {
-                Reservation reserve = new Reservation(user, copy, scheduledPickupDate);
-                reservationRepository.save(reserve);
-                return reserve;
-            }
+
             if (scheduledPickupDate.isBefore(dueDate) || scheduledPickupDate.isEqual(dueDate)) {
                 throw new InvalidScheduledPickupDateException("Scheduled pickup date cannot be before the due date.");
             }
         }
 
+        Optional<Reservation> nextReservation = findNextPendingReservation(bookCopyId, scheduledPickupDate);
+
+        if(nextReservation.isPresent()) {
+                reservendDate = nextReservation.get().getScheduledPickupDate().minusDays(1);
+        }
+
+        LocalDate calculatePlannedReturnDate = calculatePlannedReturnDate(scheduledPickupDate.plusDays(14), reservendDate);
+        if (scheduledPickupDate.isAfter(calculatePlannedReturnDate)) {
+            throw new InvalidScheduledPickupDateException("Scheduled pickup date cannot be after the planned return date.");
+        }
+
         Reservation reservation = new Reservation(user, copy, scheduledPickupDate);
+
+        reservation.setPlannedReturnDate(calculatePlannedReturnDate);
         reservationRepository.save(reservation);
         return reservation;
     }
@@ -84,4 +84,53 @@ public class ReservationService {
                 );
     }
 
+    public Optional<Reservation> findNextPendingReservation(Long bookCopyId, LocalDate scheduledPickupDate) {
+        return reservationRepository
+                .findFirstByBookCopy_IdAndScheduledPickupDateGreaterThanEqualAndStatusOrderByScheduledPickupDateAsc(
+                        bookCopyId,
+                        scheduledPickupDate,
+                        ReservationStatus.PENDING
+                );
+    }
+
+    public boolean hasReservationConflict(Long bookCopyId, LocalDate scheduledPickupDate) {
+        if (scheduledPickupDate == null) {
+            return true;
+        }
+        boolean reserved = reservationRepository.existsReservationConflict(
+                bookCopyId,
+                scheduledPickupDate,
+                ReservationStatus.PENDING
+        );
+        if (reserved) {
+            return true;
+        }
+        if (scheduledPickupDate.isBefore(LocalDate.now())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private LocalDate calculatePlannedReturnDate(LocalDate normalDueDate, LocalDate nextReservationLimit) {
+        if (normalDueDate == null || nextReservationLimit == null) {
+            throw new InvalidScheduledPickupDateException("Cannot calculate planned return date due to null values.");
+        }
+        if (normalDueDate.isBefore(nextReservationLimit)) {
+            return normalDueDate;
+        }
+        return nextReservationLimit;
+    }
+
+    private Optional<Loan> findActiveLoan(BookCopy copy) {
+        Optional<Loan> activeLoan = copy.getLoans().stream()
+                .filter(loan -> loan.getStatus() == LoanStatus.ACTIVE)
+                .findFirst();
+        return activeLoan;
+    }
+
+
+
 }
+
+

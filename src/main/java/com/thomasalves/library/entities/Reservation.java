@@ -27,6 +27,7 @@ public class Reservation {
     @NotNull
     private LocalDate scheduledPickupDate;
     private LocalDate actualPickupDate;
+    private LocalDate plannedReturnDate;
 
 
     @NotNull
@@ -98,6 +99,14 @@ public class Reservation {
 
     public void setStatus(ReservationStatus status) {
         this.status = status;
+    }
+
+    public LocalDate getPlannedReturnDate() {
+        return plannedReturnDate;
+    }
+
+    public void setPlannedReturnDate(LocalDate plannedReturnDate) {
+        this.plannedReturnDate = plannedReturnDate;
     }
 
     @Override
