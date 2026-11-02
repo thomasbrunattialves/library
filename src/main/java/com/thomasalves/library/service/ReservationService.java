@@ -35,7 +35,7 @@ public class ReservationService {
         BookCopy copy = bookCopyService.findByIdForUpdate(bookCopyId);
         User user = userService.findById(userId);
 
-        if (!(copy.getBook().getStatus() == BookStatus.ACTIVE)) {
+        if (copy.getBook().getStatus() != BookStatus.ACTIVE) {
             throw new ResourceConflictException("Book is not available for reservation.");
         }
 
@@ -45,7 +45,7 @@ public class ReservationService {
             );
         }
 
-        LocalDate reservendDate = scheduledPickupDate.plusDays(14);;
+        LocalDate reservendDate = scheduledPickupDate.plusDays(14);
 
         Optional<Loan> activeLoan = findActiveLoan(copy);
         if (activeLoan.isPresent()) {
@@ -63,8 +63,8 @@ public class ReservationService {
         }
 
         LocalDate calculatePlannedReturnDate = calculatePlannedReturnDate(scheduledPickupDate.plusDays(14), reservendDate);
-        if (scheduledPickupDate.isAfter(calculatePlannedReturnDate)) {
-            throw new InvalidScheduledPickupDateException("Scheduled pickup date cannot be after the planned return date.");
+        if (!scheduledPickupDate.isBefore(calculatePlannedReturnDate)) {
+            throw new InvalidScheduledPickupDateException("Planned return date must be after the scheduled pickup date.");
         }
 
         Reservation reservation = new Reservation(user, copy, scheduledPickupDate);
@@ -112,7 +112,7 @@ public class ReservationService {
         return false;
     }
 
-    private LocalDate calculatePlannedReturnDate(LocalDate normalDueDate, LocalDate nextReservationLimit) {
+    public LocalDate calculatePlannedReturnDate(LocalDate normalDueDate, LocalDate nextReservationLimit) {
         if (normalDueDate == null || nextReservationLimit == null) {
             throw new InvalidScheduledPickupDateException("Cannot calculate planned return date due to null values.");
         }

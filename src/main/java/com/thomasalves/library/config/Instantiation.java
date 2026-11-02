@@ -1,3 +1,4 @@
+
 package com.thomasalves.library.config;
 
 import com.thomasalves.library.entities.Author;
@@ -32,31 +33,66 @@ public class Instantiation implements CommandLineRunner {
     @Autowired
     private AuthorRepository authorRepository;
 
-
     @Override
     public void run(String... args) throws Exception {
 
-        bookCopyRepository.deleteAll();
-        bookRepository.deleteAll();
-        authorRepository.deleteAll();
-        userRepository.deleteAll();
+        // Preserva os dados existentes ao reiniciar a aplicação.
+        if (userRepository.count() > 0) {
+            return;
+        }
 
-        User u1 = new User("John Smith", LocalDate.of(1992, 5, 14),
-                "john.smith@email.com", "912345678", "Lisbon, Portugal");
+        // Evita inserir dados de teste em um banco parcialmente preenchido.
+        if (bookRepository.count() > 0 ||
+                bookCopyRepository.count() > 0 ||
+                authorRepository.count() > 0) {
+            return;
+        }
 
-        User u2 = new User("Emma Johnson", LocalDate.of(1998, 11, 3),
-                "emma.johnson@email.com", "913456789", "Porto, Portugal");
+        // USERS
 
-        User u3 = new User("Michael Brown", LocalDate.of(1987, 2, 21),
-                "michael.brown@email.com", "914567890", "Coimbra, Portugal");
+        User u1 = new User(
+                "John Smith",
+                LocalDate.of(1992, 5, 14),
+                "john.smith@email.com",
+                "912345678",
+                "Lisbon, Portugal"
+        );
 
-        User u4 = new User("Sophia Davis", LocalDate.of(2001, 7, 9),
-                "sophia.davis@email.com", "915678901", "Braga, Portugal");
+        User u2 = new User(
+                "Emma Johnson",
+                LocalDate.of(1998, 11, 3),
+                "emma.johnson@email.com",
+                "913456789",
+                "Porto, Portugal"
+        );
 
-        User u5 = new User("Daniel Wilson", LocalDate.of(1995, 9, 27),
-                "daniel.wilson@email.com", "916789012", "Figueira da Foz, Portugal");
+        User u3 = new User(
+                "Michael Brown",
+                LocalDate.of(1987, 2, 21),
+                "michael.brown@email.com",
+                "914567890",
+                "Coimbra, Portugal"
+        );
+
+        User u4 = new User(
+                "Sophia Davis",
+                LocalDate.of(2001, 7, 9),
+                "sophia.davis@email.com",
+                "915678901",
+                "Braga, Portugal"
+        );
+
+        User u5 = new User(
+                "Daniel Wilson",
+                LocalDate.of(1995, 9, 27),
+                "daniel.wilson@email.com",
+                "916789012",
+                "Figueira da Foz, Portugal"
+        );
 
         userRepository.saveAll(Arrays.asList(u1, u2, u3, u4, u5));
+
+        // AUTHORS
 
         Author a1 = new Author(
                 "Robert C. Martin",
@@ -83,6 +119,8 @@ public class Instantiation implements CommandLineRunner {
         );
 
         authorRepository.saveAll(Arrays.asList(a1, a2, a3, a4));
+
+        // BOOKS
 
         Book b1 = new Book(
                 "Clean Code",
@@ -113,6 +151,8 @@ public class Instantiation implements CommandLineRunner {
 
         bookRepository.saveAll(Arrays.asList(b1, b2, b3));
 
+        // BOOK COPIES
+
         BookCopy bc1 = new BookCopy(
                 b1,
                 Availability.AVAILABLE,
@@ -137,10 +177,8 @@ public class Instantiation implements CommandLineRunner {
                 "C05"
         );
 
-        bookCopyRepository.saveAll(Arrays.asList(bc1, bc2, bc3, bc4));
-
-
-
-
+        bookCopyRepository.saveAll(
+                Arrays.asList(bc1, bc2, bc3, bc4)
+        );
     }
 }

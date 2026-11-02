@@ -1,5 +1,6 @@
 package com.thomasalves.library.resource;
 
+import com.thomasalves.library.dto.ReservationDTO;
 import com.thomasalves.library.entities.Reservation;
 import com.thomasalves.library.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class ReservationResource {
     private ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<Reservation> create(
+    public ResponseEntity<ReservationDTO> create(
             @RequestParam Long userId,
             @RequestParam Long bookCopyId,
             @RequestParam
@@ -30,6 +31,7 @@ public class ReservationResource {
             LocalDate scheduledPickupDate
             ){
         Reservation reservation = reservationService.reservation(userId, bookCopyId, scheduledPickupDate);
+        ReservationDTO reservationDTO = new ReservationDTO(reservation);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .replaceQuery(null)
@@ -38,7 +40,7 @@ public class ReservationResource {
                 .toUri();
 
 
-        return ResponseEntity.created(uri).body(reservation);
+        return ResponseEntity.created(uri).body(reservationDTO);
     }
 
 }

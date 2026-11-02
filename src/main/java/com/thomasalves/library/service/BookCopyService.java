@@ -52,8 +52,6 @@ public class BookCopyService {
     public void update(Long id,  BookCopyUpdateDTO bookCopyUpdateDTO) {
         BookCopy bookCopy = findById(id);
         bookCopy.setShelfLocation(bookCopyUpdateDTO.getShelfLocation());
-        bookCopy.setAvailability(bookCopyUpdateDTO.getAvailability());
-
        bookCopyRepository.save(bookCopy);
 
     }
