@@ -9,6 +9,7 @@ import com.thomasalves.library.entities.enums.LoanStatus;
 import com.thomasalves.library.entities.enums.ReservationStatus;
 import com.thomasalves.library.repository.ReservationRepository;
 import com.thomasalves.library.service.exception.InvalidScheduledPickupDateException;
+import com.thomasalves.library.service.exception.ObjectNotFoundException;
 import com.thomasalves.library.service.exception.ResourceConflictException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,13 @@ public class ReservationService {
 
     @Autowired
     private UserService userService;
+
+    public Reservation findById(Long reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ObjectNotFoundException(
+                        "Reservation not found with id: " + reservationId
+                ));
+    }
 
 
     @Transactional
@@ -122,7 +130,7 @@ public class ReservationService {
         return nextReservationLimit;
     }
 
-    private Optional<Loan> findActiveLoan(BookCopy copy) {
+    public Optional<Loan> findActiveLoan(BookCopy copy) {
         Optional<Loan> activeLoan = copy.getLoans().stream()
                 .filter(loan -> loan.getStatus() == LoanStatus.ACTIVE)
                 .findFirst();

@@ -5,10 +5,7 @@ import com.thomasalves.library.entities.Loan;
 import com.thomasalves.library.service.LoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -33,6 +30,13 @@ public class LoanResource {
 
         return ResponseEntity.created(uri).body(loanDTO);
 
+    }
+
+    @PatchMapping("/{loanId}/return")
+    public ResponseEntity<LoanDTO> returnLoan(@PathVariable Long loanId) {
+        Loan loan = loanService.returnLoan(loanId);
+        LoanDTO loanDTO = new LoanDTO(loan);
+        return ResponseEntity.ok().body(loanDTO);
     }
 
 }

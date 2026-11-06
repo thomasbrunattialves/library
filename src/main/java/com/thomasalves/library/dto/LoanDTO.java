@@ -16,6 +16,7 @@ public class LoanDTO implements Serializable {
     private LocalDate loanDate;
     private LocalDate dueDate;
     private LoanStatus status;
+    private LocalDate returnDate;
 
 
     public LoanDTO(Loan loan) {
@@ -25,6 +26,7 @@ public class LoanDTO implements Serializable {
         this.loanDate = loan.getLoanDate();
         this.dueDate = loan.getDueDate();
         this.status = loan.getStatus();
+        this.returnDate = loan.getReturnDate();
     }
 
     public Long getId() {
@@ -73,5 +75,12 @@ public class LoanDTO implements Serializable {
 
     public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
+    }
+    public LocalDate getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(LocalDate returnDate) {
+        this.returnDate = returnDate;
     }
 }
