@@ -137,6 +137,10 @@ public class ReservationService {
         return activeLoan;
     }
 
+    public boolean existsPickupConflict(Long bookCopyId, Long reservationId, LocalDate pickupDate, LocalDate returnDate, ReservationStatus status) {
+        return reservationRepository.existsPickupConflict(bookCopyId, reservationId, pickupDate, returnDate, status);
+    }
+
 
 
 }

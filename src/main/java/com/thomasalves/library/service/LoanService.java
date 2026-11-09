@@ -117,6 +117,12 @@ public class LoanService {
         Reservation reservation = reservationService.findById(reservationId);
         BookCopy bookCopy = bookCopyService.findByIdForUpdate(reservation.getBookCopy().getId());
         entityManager.refresh(reservation);
+        if (bookCopy.getBook().getStatus() != BookStatus.ACTIVE) {
+            throw new ResourceConflictException(
+                    "Book is not available for pickup."
+            );
+        }
+
         if(reservation.getStatus() != ReservationStatus.PENDING) {
             throw new ResourceConflictException("Reservation is not pending.");
         }
@@ -129,21 +135,22 @@ public class LoanService {
             throw new ResourceConflictException("There is an active loan for this book copy.");
         }
 
-        LocalDate scheduledPickupDate = reservation.getScheduledPickupDate();
         LocalDate today = LocalDate.now();
-        if (scheduledPickupDate.isAfter(today)) {
-                Optional<Reservation> nextReservation = reservationService.findNextPendingReservation(bookCopy.getId(), today);
-                if(nextReservation.isPresent()) {
-                    LocalDate nextScheduledPickupDate = nextReservation.get().getScheduledPickupDate();
-                    if (nextScheduledPickupDate.isBefore(scheduledPickupDate)) {
-                        throw new ResourceConflictException(
-                                "Cannot pick up reservation. There is a next reservation scheduled for " + nextScheduledPickupDate);
-                    }
-            }
+
+        if (!today.isBefore(reservation.getPlannedReturnDate())) {
+            throw new ResourceConflictException(
+                    "Reservation return date has already expired."
+            );
+        }
+        if(reservationService.existsPickupConflict(bookCopy.getId(), reservation.getId(), today, reservation.getPlannedReturnDate(), ReservationStatus.PENDING)) {
+            throw new ResourceConflictException(
+                    "Cannot pick up reservation. There is a conflicting reservation."
+            );
         }
 
-        Loan loan = new Loan(reservation.getUser(), reservation.getBookCopy(), reservation.getPlannedReturnDate());
+        Loan loan = new Loan(reservation.getUser(), bookCopy, reservation.getPlannedReturnDate());
         reservation.setStatus(ReservationStatus.COMPLETED);
+        reservation.setActualPickupDate(today);
         bookCopy.setAvailability(Availability.CHECKED_OUT);
         loanRepository.save(loan);
         return loan;

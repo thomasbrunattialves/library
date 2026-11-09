@@ -39,4 +39,20 @@ public class LoanResource {
         return ResponseEntity.ok().body(loanDTO);
     }
 
+    @PostMapping("/from-reservation/{reservationId}")
+    public ResponseEntity<LoanDTO> pickupReservation(@PathVariable Long reservationId) {
+        Loan loan = loanService.pickupReservation(reservationId);
+        LoanDTO loanDTO = new LoanDTO(loan);
+
+        // Create a URI for the new loan
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/loans/{id}")
+                .buildAndExpand(loan.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(loanDTO);
+    }
+
+
 }

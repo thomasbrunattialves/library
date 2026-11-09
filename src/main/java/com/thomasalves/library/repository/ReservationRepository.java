@@ -35,4 +35,21 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("status") ReservationStatus status
     );
 
+    @Query("""
+    SELECT COUNT(r) > 0
+    FROM Reservation r
+    WHERE r.bookCopy.id = :bookCopyId
+      AND r.id <> :reservationId
+      AND r.status = :status
+      AND r.scheduledPickupDate <= :returnDate
+      AND r.plannedReturnDate >= :pickupDate
+    """)
+    boolean existsPickupConflict(
+            @Param("bookCopyId") Long bookCopyId,
+            @Param("reservationId") Long reservationId,
+            @Param("pickupDate") LocalDate pickupDate,
+            @Param("returnDate") LocalDate returnDate,
+            @Param("status") ReservationStatus status
+    );
+
 }
