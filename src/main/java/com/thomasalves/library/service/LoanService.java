@@ -137,6 +137,12 @@ public class LoanService {
 
         LocalDate today = LocalDate.now();
 
+        if (reservation.getScheduledPickupDate().isBefore(today)) {
+            throw new ResourceConflictException(
+                    "Cannot pick up reservation. Scheduled pickup date has already passed."
+            );
+        }
+
         if (!today.isBefore(reservation.getPlannedReturnDate())) {
             throw new ResourceConflictException(
                     "Reservation return date has already expired."
@@ -147,6 +153,8 @@ public class LoanService {
                     "Cannot pick up reservation. There is a conflicting reservation."
             );
         }
+
+
 
         Loan loan = new Loan(reservation.getUser(), bookCopy, reservation.getPlannedReturnDate());
         reservation.setStatus(ReservationStatus.COMPLETED);

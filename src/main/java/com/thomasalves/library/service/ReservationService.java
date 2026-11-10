@@ -11,11 +11,14 @@ import com.thomasalves.library.repository.ReservationRepository;
 import com.thomasalves.library.service.exception.InvalidScheduledPickupDateException;
 import com.thomasalves.library.service.exception.ObjectNotFoundException;
 import com.thomasalves.library.service.exception.ResourceConflictException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +32,9 @@ public class ReservationService {
 
     @Autowired
     private UserService userService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public Reservation findById(Long reservationId) {
         return reservationRepository.findById(reservationId)
@@ -81,6 +87,49 @@ public class ReservationService {
         reservationRepository.save(reservation);
         return reservation;
     }
+
+    @Transactional
+    public Reservation cancelReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ObjectNotFoundException("Reservation not found."));
+
+        BookCopy copy = bookCopyService.findByIdForUpdate(reservation.getBookCopy().getId());
+
+        entityManager.refresh(reservation);
+
+
+        if (reservation.getStatus() != ReservationStatus.PENDING) {
+            throw new ResourceConflictException("Only pending reservations can be canceled.");
+        }
+
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        return reservation;
+    }
+    @Transactional
+    public void expireReservations() {
+        LocalDate today = LocalDate.now();
+
+        List<Reservation> expiredReservations =
+                reservationRepository.findByStatusAndScheduledPickupDateBefore(
+                        ReservationStatus.PENDING, today
+                );
+
+        for (Reservation reservation : expiredReservations) {
+            bookCopyService.findByIdForUpdate(
+                    reservation.getBookCopy().getId()
+            );
+
+            entityManager.refresh(reservation);
+
+            if (reservation.getStatus() == ReservationStatus.PENDING
+                    && reservation.getScheduledPickupDate().isBefore(today)) {
+
+                reservation.setStatus(ReservationStatus.EXPIRED);
+            }
+        }
+    }
+
+
 
 
     public boolean isReserved(Long bookCopyId, LocalDate scheduledPickupDate) {
