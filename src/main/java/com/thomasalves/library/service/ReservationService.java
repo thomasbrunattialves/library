@@ -94,9 +94,7 @@ public class ReservationService {
                 .orElseThrow(() -> new ObjectNotFoundException("Reservation not found."));
 
         BookCopy copy = bookCopyService.findByIdForUpdate(reservation.getBookCopy().getId());
-
         entityManager.refresh(reservation);
-
 
         if (reservation.getStatus() != ReservationStatus.PENDING) {
             throw new ResourceConflictException("Only pending reservations can be canceled.");
@@ -127,18 +125,6 @@ public class ReservationService {
                 reservation.setStatus(ReservationStatus.EXPIRED);
             }
         }
-    }
-
-
-
-
-    public boolean isReserved(Long bookCopyId, LocalDate scheduledPickupDate) {
-        return reservationRepository
-                .existsByBookCopy_IdAndScheduledPickupDateAndStatus(
-                        bookCopyId,
-                        scheduledPickupDate,
-                        ReservationStatus.PENDING
-                );
     }
 
     public Optional<Reservation> findNextPendingReservation(Long bookCopyId, LocalDate scheduledPickupDate) {

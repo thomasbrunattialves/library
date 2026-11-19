@@ -12,11 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    boolean existsByBookCopy_IdAndScheduledPickupDateAndStatus(
-            Long bookCopyId,
-            LocalDate scheduledPickupDate,
-            ReservationStatus status
-    );
+
     Optional<Reservation> findFirstByBookCopy_IdAndScheduledPickupDateGreaterThanEqualAndStatusOrderByScheduledPickupDateAsc(
             Long bookCopyId,
             LocalDate currentDate,
